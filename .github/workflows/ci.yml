@@ -27,10 +27,10 @@ jobs:
         id: run-tests
         run: |
           mkdir -p test-logs
+          # Ensure the pipeline returns a non-zero exit if any command fails
+          set -o pipefail
           # Run tests and capture both stdout/stderr into a log file
           bun test --env=happy-dom 2>&1 | tee test-logs/tests.log
-          # Exit with the test command exit code so the job status reflects test result
-          exit ${PIPESTATUS[0]}
 
       - name: Upload test logs
         if: always()
