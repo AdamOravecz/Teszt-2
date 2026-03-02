@@ -23,6 +23,18 @@ jobs:
 
       - name: Show assistant name in logs
         run: echo "Assistant: GitHub Copilot"
-
       - name: Run tests
-        run: bun test --env=happy-dom
+        id: run-tests
+        run: |
+          mkdir -p test-logs
+          # Run tests and capture both stdout/stderr into a log file
+          bun test --env=happy-dom 2>&1 | tee test-logs/tests.log
+          # Exit with the test command exit code so the job status reflects test result
+          exit ${PIPESTATUS[0]}
+
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: test-logs
